@@ -1,0 +1,11 @@
+Package: PairSeek
+Type: Package
+Title: Prognostic pairwise relationships among bacterial species 
+Version: 0.1.0
+Author: Sean Devlin and Irina Ostrovnaya
+Maintainer: Sean Devlin <devlins@mskcc.org>
+Description: Flexible statistical method for identifying prognostic pairwise relationships among bacterial species in microbiome studies
+
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
