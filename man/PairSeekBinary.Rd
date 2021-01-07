@@ -2,20 +2,19 @@
 \alias{PairSeekBinary}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-}
+Function to rank pairwise interactions between bacteria based on the strength of their association with sample group }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-PairSeekBinary(y.anal, data.anal, LassoIterations = 50)
+PairSeekBinary(y, data, LassoIterations = 50)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{y.anal}{
+  \item{y}{
 %%     ~~Describe \code{y.anal} here~~
 }
-  \item{data.anal}{
+  \item{data}{
 %%     ~~Describe \code{data.anal} here~~
 }
   \item{LassoIterations}{
@@ -53,10 +52,10 @@ PairSeekBinary(y.anal, data.anal, LassoIterations = 50)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (y.anal, data.anal, LassoIterations = 50) 
+function (y.anal, data.anal, LassoIterations = 50)
 {
     grpA <- sample((1:dim(data.anal)[1]), floor(dim(data.anal)[1]/2))
-    grpB <- (1:dim(data.anal)[1])[!((1:dim(data.anal)[1]) \%in\% 
+    grpB <- (1:dim(data.anal)[1])[!((1:dim(data.anal)[1]) \%in\%
         grpA)]
     datagrpA <- data.anal[grpA, ]
     datagrpB <- data.anal[grpB, ]
@@ -65,11 +64,11 @@ function (y.anal, data.anal, LassoIterations = 50)
     pairsmatrixnames <- NULL
     for (i in 1:(dim(data.anal)[2] - 1)) {
         for (j in (i + 1):dim(data.anal)[2]) {
-            pairsmatrixnames <- c(pairsmatrixnames, paste(colnames(data.anal)[i], 
+            pairsmatrixnames <- c(pairsmatrixnames, paste(colnames(data.anal)[i],
                 ".X.", colnames(data.anal)[j], sep = ""))
         }
     }
-    xtest <- getpairsOddXOut(datagrpB, datagrpA, ygrpB, choose(dim(datagrpB)[2], 
+    xtest <- getpairsOddXOut(datagrpB, datagrpA, ygrpB, choose(dim(datagrpB)[2],
         2))
     colnames(xtest) <- pairsmatrixnames
     mod1 <- glmnet(xtest, ygrpA, family = "binomial", alpha = 1)
@@ -77,17 +76,17 @@ function (y.anal, data.anal, LassoIterations = 50)
     retmatrix <- NULL
     for (simsim in 1:LassoIterations) {
         grpA <- sample((1:dim(data.anal)[1]), floor(dim(data.anal)[1]/2))
-        grpB <- (1:dim(data.anal)[1])[!((1:dim(data.anal)[1]) \%in\% 
+        grpB <- (1:dim(data.anal)[1])[!((1:dim(data.anal)[1]) \%in\%
             grpA)]
         datagrpA <- data.anal[grpA, ]
         datagrpB <- data.anal[grpB, ]
         ygrpB <- 1 * y.anal[grpB]
         ygrpA <- 1 * y.anal[grpA]
-        xtest <- getpairsOddXOut(datagrpB, datagrpA, ygrpB, choose(dim(datagrpB)[2], 
+        xtest <- getpairsOddXOut(datagrpB, datagrpA, ygrpB, choose(dim(datagrpB)[2],
             2))
         colnames(xtest) <- pairsmatrixnames
         mod1 <- glmnet(xtest, ygrpA, family = "binomial", alpha = 1)
-        selected <- predict(mod1, type = "nonzero", s = sample(lambdaforC2, 
+        selected <- predict(mod1, type = "nonzero", s = sample(lambdaforC2,
             1))
         selected <- selected[[length(selected)]]
         ret <- logical(ncol(xtest))

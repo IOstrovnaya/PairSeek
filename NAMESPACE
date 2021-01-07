@@ -1,1 +1,4 @@
-export("PairSeekLogRatio","PairSeekBinary")
+export("PairSeekBinary")
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+

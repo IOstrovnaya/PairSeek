@@ -1,0 +1,56 @@
+%\VignetteIndexEntry{PairSeek}
+
+%\VignetteKeywords{Interactions, bacterial, pairwise}
+%\VignettePackage{PairSeek}
+%\VignetteDepends{PairSeek}
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+
+
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\evensidemargin}{0.25in}
+
+\usepackage{Sweave}
+\begin{document}
+\input{PairSeek-concordance}
+\setkeys{Gin}{width=0.99\textwidth}
+
+
+\title{\bf Pairseek: Identifying prognostic  pairwise relationships among bacterial species in microbiome studies}
+
+\author{Sean Devlin and Irina Ostrovnaya}
+
+\maketitle
+
+\begin{center}
+Department of Epidemiology and Biostatistics\\
+Memorial Sloan-Kettering Cancer Center\\
+{\tt devlins@mskcc.org}\\
+\end{center}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+This document presents an overview of the {\tt PairSeek} algorithm. The goal of the method is to find pairs of bacteria that have differential dichotomized relationship as specified below between cases and controls.
+
+ Let $X_{ik}$  be the abundance of $i$-th  bacterium, $i=\{1, \ldots ,p\}$ in the $k$-th subject, $k=\{1, \ldots ,n\}$. For amplicon
+sequencing, $X_{ik}$  would be the non-normalized number of reads matching the specific bacterial sequence. Suppose we want to test if the relationship between two  bacterial abundances is dependent on some binary disease state $Y_k$, e.g. cancer vs control.
+
+We define binary indicator variables  $Z_k^{ij}(c)=1(X_{ik} \le c X_{jk})$ which take a value of 1 if  $X_{jk}$ is at least $c-$fold smaller than $X_{ik}$. We are looking for pairs that have $X_{ik} \le c X_{jk}$ equal to 1, for example, in most cases and equal to 0 for most controls. If $c$ is set to 1, the resulting dichotomized variables will only be  useful for comparing bacteria with abundances on the same scale.
+
+For intuitive explanation imagine prevalences of two bacteria plotted against each other. Using the proposed algorithm  we will be able to detect pairs of bacteria that tend to have prevalences on the opposite sides of regression line specified by slope $c$. We will utilize resampling as in stability selection framework to both get more stable measure of pair's association with cohort and to get the slopes $c$. We will split subjects into two groups randomly: on one group for each pair of bacteria we will estimate optimal slopes $c$ that separate cases and controls, and then we will fit LASSO (least absolute shrinkage and selection operator) on the opposite set of patients with all possible pairs dichotomized at the estimated slopes and random penalty parameter. After repeating these steps say 1000 of times we will calculate how often each pair of bacteria was selected among these LASSO runs. This quantity, dominance score, can be used to rank pair's association with cohort.
+
+\section{Data example}
+We will illustrate how the method works based on oral cancer dataset from \citep{bornigen_alterations_2017}.
+
+\begin{Schunk}
+\begin{Sinput}
+> library(PairSeek)
